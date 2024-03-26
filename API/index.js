@@ -7,8 +7,12 @@ const User = require("./models/user")
 //Bcrypt
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
+const secret = "lkiu87gfbxse4365fg";
 
-app.use(cors());
+//jwt
+const jwt = require('jsonwebtoken');
+
+app.use(cors({credentials:true , origin:'http://localhost:5173'}));
 app.use(express.json());
 
 mongoose.connect(
@@ -30,6 +34,25 @@ app.post('/register', async(req,res) => {
     }
     //res.json({requestData:{username,password}})      
 });
+
+app.post('/login',async (req,res) => {
+    const {username,password} = req.body;
+    const userDoc = await User.findOne({username});
+    const match = await bcrypt.compare(password, userDoc.password);
+        if (match) {
+            //res.json({ message: 'Login successful' });
+            jwt.sign({username,id:userDoc._id},secret, {}, (err, token) => {
+                if(err) throw err;
+                res.cookie('token', token).json('ok');
+            })
+        } else {
+            res.status(401).json({ error: 'Invalid password' });
+        }
+})
+
+
+
+
 
 app.listen((8080),() => {
     console.log("server is listening")
