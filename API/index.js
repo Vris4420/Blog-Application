@@ -4,6 +4,10 @@ const { default: mongoose } = require('mongoose');
 const app = express();
 const User = require("./models/user")
 
+//Bcrypt
+const bcrypt = require('bcryptjs');
+const saltRounds = 10;
+
 app.use(cors());
 app.use(express.json());
 
@@ -14,7 +18,12 @@ mongoose.connect(
 app.post('/register', async(req,res) => {
     const{username,password} = req.body;
     try{
-        const userDoc = await User.create({username,password});
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, salt);
+        const userDoc = await User.create({
+            username,
+            password: hash,
+        });
         res.json(userDoc);
     }catch(err){
         res.status(400).json(err);
