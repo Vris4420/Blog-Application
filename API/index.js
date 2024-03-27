@@ -3,17 +3,20 @@ const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const app = express();
 const User = require("./models/user")
-
 //Bcrypt
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
 const secret = "lkiu87gfbxse4365fg";
-
 //jwt
 const jwt = require('jsonwebtoken');
+//cookie-parser
+const cookieParser = require('cookie-parser');
 
+//Middlewares
 app.use(cors({credentials:true , origin:'http://localhost:5173'}));
 app.use(express.json());
+app.use(cookieParser())
+
 
 mongoose.connect(
     'mongodb+srv://sharma08462:fFUkrhXzURhlnfbu@cluster0.aalncvq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0'
@@ -50,6 +53,17 @@ app.post('/login',async (req,res) => {
         }
 })
 
+app.get('/profile', (req,res) => {
+    const {token} = req.cookies;
+    jwt.verify(token, secret, {}, (err, info) => {
+        if(err) throw err;
+        res.json(info)
+    })
+})
+
+app.post('/logout', (req,res) => {
+    res.cookie('token', '').json('ok');
+})
 
 
 
