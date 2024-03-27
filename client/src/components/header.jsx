@@ -1,27 +1,34 @@
-import { set } from "mongoose";
-import { useEffect, useState } from "react";
+
+import { useEffect, useState, useContext } from "react";
 import {Link} from "react-router-dom";
+import { UserContext } from "../userContext";
 
 export default function Header(){
-  const [username, setUsername] = useState(null);
+  const {setUserInfo, userInfo} = useContext(UserContext)
   useEffect(() => {
     fetch('http://localhost:8080/profile', {
       credentials:'include',
     }).then(response => {
       response.json().then(userInfo => {
-        setUsername(userInfo.username)
+        setUserInfo(userInfo);
       })
     })
   },[])
 
-  function logout(){
-    fetch('http://localhost:8080/logout',{
-      credentials:'include',
-      method:'POST',
+  function logout() {
+    fetch('http://localhost:8080/logout', {
+        credentials: 'include',
+        method: 'POST',
     })
-    setUsername(null);
-  }
+    .then(() => {
+        setUserInfo(null); // Update user info after logout completes
+    })
+    .catch(error => {
+        console.error('Logout failed:', error);
+    });
+}
 
+  const username = userInfo?.username;
 
     return(
         <header>

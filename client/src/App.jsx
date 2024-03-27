@@ -6,20 +6,23 @@ import './App.css'
 import IndexPage from "./components/pages/indexPage"
 import LoginPage from "./components/pages/loginPage"
 import RegisterPage from "./components/pages/registerPage"
+import { UserContextProvider } from "./userContext"
 
 function App() {
 
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
+    <UserContextProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
 
-        <Route index element={<IndexPage />} />
-        <Route path={'/login'} element={<LoginPage />} />
-        <Route path={'/register'} element={<RegisterPage/>}/>
+          <Route index element={<IndexPage />} />
+          <Route path={'/login'} element={<LoginPage />} />
+          <Route path={'/register'} element={<RegisterPage/>}/>
 
-      </Route>
+        </Route>
 
-    </Routes>
+      </Routes>
+    </UserContextProvider>
   )
 }
 

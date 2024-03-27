@@ -46,8 +46,11 @@ app.post('/login',async (req,res) => {
             //res.json({ message: 'Login successful' });
             jwt.sign({username,id:userDoc._id},secret, {}, (err, token) => {
                 if(err) throw err;
-                res.cookie('token', token).json('ok');
-            })
+                res.cookie('token', token).json({
+                    id:userDoc._id,
+                    username,
+            });
+        })
         } else {
             res.status(401).json({ error: 'Invalid password' });
         }
@@ -72,7 +75,3 @@ app.listen((8080),() => {
     console.log("server is listening")
 })   
 
-// fFUkrhXzURhlnfbu
-// sharma08462
-// mongodb+srv://sharma08462:fFUkrhXzURhlnfbu@cluster0.aalncvq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-// mongodb+srv://sharma08462:<password>@cluster0.aalncvq.mongodb.net/
