@@ -3,6 +3,8 @@ const cors = require('cors');
 const { default: mongoose } = require('mongoose');
 const app = express();
 const User = require("./models/user")
+const fs = require('fs');
+const Post = require('./models/post');
 //Bcrypt
 const bcrypt = require('bcryptjs');
 const saltRounds = 10;
@@ -11,6 +13,9 @@ const secret = "lkiu87gfbxse4365fg";
 const jwt = require('jsonwebtoken');
 //cookie-parser
 const cookieParser = require('cookie-parser');
+//multer
+const multer = require("multer");
+const uploadMiddleware = multer({dest:'uploads/'})
 
 //Middlewares
 app.use(cors({credentials:true , origin:'http://localhost:5173'}));
@@ -68,6 +73,24 @@ app.post('/logout', (req,res) => {
     res.cookie('token', '').json('ok');
 })
 
+app.post('/post' , uploadMiddleware.single('file'), async (req,res) => {
+    const {originalname, path} = req.file;
+    const parts = originalname.split('.');
+    const ext = parts[parts.length - 1];
+    const newPath = path+'.'+ext;
+    fs.renameSync([path, newPath ]);
+
+     const {title,summary,content} = req.body;
+     const postDoc = await Post.create({
+        title,
+        summary,
+        content,
+        cover:newPath,
+    })
+
+    res.json(postDoc);
+
+})
 
 
 
